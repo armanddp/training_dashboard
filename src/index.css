@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --uphill-blue: #4A9ED9;
+  --uphill-navy: #091E3B;
+  --uphill-light: #F5F7FA;
+  --uphill-accent: #FF4B36;
 }
 
 body {
@@ -11,8 +15,8 @@ body {
   min-height: 100vh;
 }
 
-.strava-gradient {
-  background: linear-gradient(45deg, #fc4c02, #ff764d);
+.header-gradient {
+  background: linear-gradient(to right, var(--uphill-blue), var(--uphill-navy));
 }
 
 /* Custom scrollbar */
@@ -25,66 +29,178 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #fc4c02;
+  background: var(--uphill-blue);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e34402;
+  background: var(--uphill-navy);
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --background: 210 33% 99%;
+    --foreground: 217 33% 8%;
+    --card: 210 33% 98%;
+    --card-foreground: 217 33% 8%;
+    --popover: 210 33% 98%;
+    --popover-foreground: 217 33% 8%;
+    --primary: 208 62% 55%; /* Uphill blue */
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 217 71% 12%; /* Uphill navy */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 16% 90%;
+    --muted-foreground: 215 16% 40%;
+    --accent: 24 84% 51%; /* Uphill orange accent */
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --border: 215 16% 86%;
+    --input: 215 16% 86%;
+    --ring: 208 62% 55%; /* Uphill blue */
     --radius: 0.5rem;
   }
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --background: 217 71% 8%;
+    --foreground: 210 33% 98%;
+    --card: 217 71% 12%;
+    --card-foreground: 210 33% 98%;
+    --popover: 217 71% 12%;
+    --popover-foreground: 210 33% 98%;
+    --primary: 208 62% 55%; /* Uphill blue */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 210 33% 70%;
+    --accent: 24 84% 51%; /* Uphill orange accent */
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 208 62% 55%; /* Uphill blue */
   }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom animation keyframes */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Modern UI animations and transitions */
+.smooth-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Apply Inter font to the entire app */
+html, body, button, input, textarea, select {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.hover-lift {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Modern UI card styles */
+.uphill-card {
+  @apply bg-gradient-to-br from-white to-slate-50 shadow-lg rounded-xl overflow-hidden transition-all hover-lift border-0;
+}
+
+/* Phase card styling for training plan visualization */
+.phase-card {
+  @apply bg-gradient-to-br shadow-md rounded-lg p-4 transition-all border border-transparent;
+}
+
+.phase-base {
+  @apply from-blue-50 to-slate-100 border hover:border-uphill-blue;
+}
+
+.phase-build {
+  @apply from-indigo-50 to-blue-100 hover:border-indigo-400;
+}
+
+.phase-peak {
+  @apply from-uphill-blue/10 to-uphill-blue/20 hover:border-uphill-blue;
+}
+
+.phase-race {
+  @apply from-uphill-accent/10 to-uphill-accent/20 hover:border-uphill-accent;
+}
+
+.phase-recovery {
+  @apply from-green-50 to-emerald-100 hover:border-emerald-400;
+}
+
+/* Table styling for weekly plans */
+th {
+  @apply py-2 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider;
+}
+
+td {
+  @apply py-3 px-4 text-sm text-gray-700;
+}
+
+/* Code block and markdown styling */
+pre {
+  @apply p-4 rounded-md bg-gray-50 text-gray-700 text-sm leading-relaxed font-mono;
+  line-height: 1.6;
+}
+
+.markdown-content h1, 
+.markdown-content h2, 
+.markdown-content h3 {
+  @apply font-bold text-uphill-blue my-4;
+}
+
+.markdown-content h1 {
+  @apply text-xl;
+}
+
+.markdown-content h2 {
+  @apply text-lg;
+}
+
+.markdown-content h3 {
+  @apply text-base;
+}
+
+.markdown-content p {
+  @apply my-2;
+}
+
+.markdown-content ul, 
+.markdown-content ol {
+  @apply pl-5 my-2;
+}
+
+.markdown-content li {
+  @apply my-1;
+}
+
+.markdown-content code {
+  @apply bg-gray-100 rounded px-1 py-0.5 text-uphill-navy font-mono text-sm;
 }

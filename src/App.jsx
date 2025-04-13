@@ -30,10 +30,10 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="strava-gradient text-primary-foreground p-4 shadow-md">
+      <header className="bg-gradient-to-r from-uphill-blue to-uphill-navy text-white p-6 shadow-lg">
         <div className="container mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold">PTL Training Dashboard</h1>
-          <p className="text-primary-foreground/80">Import Strava training data and generate our PTL training plans</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">PTL Training Dashboard</h1>
+          <p className="text-white/90 text-sm mt-1">Import Strava training data and generate customized PTL training plans</p>
         </div>
       </header>
 
@@ -73,7 +73,7 @@ function App() {
       </main>
 
       <footer className="mt-auto p-4 bg-muted text-muted-foreground text-center text-sm">
-        <p>Created for Strava data analysis • {new Date().getFullYear()}</p>
+        <p>Created for Petite Trotters Llandudno • {new Date().getFullYear()}</p>
       </footer>
     </div>
   );

@@ -292,12 +292,31 @@ export const parseOpenAIResponse = (response) => {
  * Call OpenAI API to generate a training plan
  * @param {Object} formData - User input data
  * @param {Object} activitiesData - Processed Strava data
+ * @param {string|null} customPrompt - Optional custom prompt to override default
  * @returns {Promise<Object>} - Structured training plan and insights
  */
-export const generateTrainingPlan = async (formData, activitiesData) => {
+export const generateTrainingPlan = async (formData, activitiesData, customPrompt = null) => {
   try {
     const trainingDataSummary = summarizeTrainingData(activitiesData);
-    const promptData = createOpenAIPrompt(formData, trainingDataSummary);
+    
+    // Use custom prompt or generate from form data
+    const promptData = customPrompt 
+      ? {
+          model: MODEL,
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert ultra trail running coach specializing in mountain ultra endurance events and following the Uphill Athlete methodology. Generate detailed, specific training plans based on runner data and race goals."
+            },
+            {
+              role: "user",
+              content: customPrompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 4000
+        }
+      : createOpenAIPrompt(formData, trainingDataSummary);
     
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
