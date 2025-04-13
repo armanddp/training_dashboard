@@ -977,20 +977,26 @@ ${fullPlan}
                   {/* Key Insights from Training Data */}
                   {formData.generatedInsights && formData.generatedInsights.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold mb-3 text-uphill-blue flex items-center gap-2">
+                      <h3 className="text-lg font-semibold mb-5 text-uphill-blue flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-uphill-blue" />
                         Key Insights
                       </h3>
-                      <div className="space-y-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {formData.generatedInsights.map((insight, i) => (
                           <motion.div 
                             key={i} 
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="p-3 bg-white dark:bg-gray-800 rounded-md border border-uphill-blue/10 shadow-sm hover:shadow-md transition-shadow"
+                            className="p-4 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-uphill-blue/10 shadow-sm hover:shadow-md transition-all hover:border-uphill-blue/30 relative overflow-hidden group"
                           >
-                            <p className="text-sm">{insight}</p>
+                            <div className="absolute top-0 left-0 w-12 h-12 bg-uphill-blue/10 flex items-center justify-center rounded-br-lg">
+                              <span className="text-uphill-blue font-bold text-xl">{i+1}</span>
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-uphill-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="ml-10 mt-1">
+                              <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{insight}</p>
+                            </div>
                           </motion.div>
                         ))}
                       </div>
