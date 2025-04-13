@@ -2,14 +2,17 @@ import { useState } from 'react';
 import { parseActivitiesCSV } from './utils/csvParser';
 import FileUpload from './components/FileUpload';
 import Dashboard from './components/Dashboard';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Import Card
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Import Alert for errors
-import { Terminal } from "lucide-react"; // Icon for Alert
+import TrainingPlanGenerator from './components/TrainingPlanGenerator';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Terminal } from "lucide-react";
 
 function App() {
   const [activitiesData, setActivitiesData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const handleFileUpload = async (file) => {
     try {
@@ -29,8 +32,8 @@ function App() {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="strava-gradient text-primary-foreground p-4 shadow-md">
         <div className="container mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold">PTL Data Prep Dashboard</h1>
-          <p className="text-primary-foreground/80">Visualize your training data and prep it for PTL Import</p>
+          <h1 className="text-2xl md:text-3xl font-bold">PTL Training Dashboard</h1>
+          <p className="text-primary-foreground/80">Import Strava training data and generate our PTL training plans</p>
         </div>
       </header>
 
@@ -52,7 +55,20 @@ function App() {
             </CardContent>
           </Card>
         ) : (
-          <Dashboard activitiesData={activitiesData} />
+          <Tabs defaultValue="dashboard" value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full max-w-md mx-auto mb-8 grid-cols-2">
+              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+              <TabsTrigger value="training-plan">Training Plan</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="dashboard">
+              <Dashboard activitiesData={activitiesData} />
+            </TabsContent>
+            
+            <TabsContent value="training-plan">
+              <TrainingPlanGenerator activitiesData={activitiesData} />
+            </TabsContent>
+          </Tabs>
         )}
       </main>
 

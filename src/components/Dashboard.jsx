@@ -312,24 +312,70 @@ const Dashboard = ({ activitiesData }) => {
                   axisLine={false}
                 />
                 <YAxis 
+                  yAxisId="distance"
                   stroke="#888888"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `${value.toFixed(0)} km`}
                 />
+                <YAxis 
+                  yAxisId="elevation"
+                  orientation="right"
+                  stroke="#22c55e"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `${value.toFixed(0)} m`}
+                />
+                <YAxis 
+                  yAxisId="activities"
+                  orientation="right"
+                  stroke="#3b82f6"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  hide={true} // Hide this axis to avoid clutter, but keep for scaling
+                />
                 <Tooltip 
-                  formatter={(value, name) => [`${Number(value).toFixed(1)} km`, 'Distance']} // Ensure value is number
+                  formatter={(value, name, props) => {
+                    if (name === 'Distance') return [`${Number(value).toFixed(1)} km`, name];
+                    if (name === 'Elevation') return [`${Number(value).toFixed(0)} m`, name];
+                    if (name === 'Activities') return [value, name];
+                    return [value, name];
+                  }}
                   labelFormatter={formatTooltipLabel}
                 />
                 <Legend />
                 <Area 
+                  yAxisId="distance"
                   type="monotone" 
                   dataKey="distance" 
-                  name="Distance (km)" 
+                  name="Distance" 
                   stroke="hsl(var(--primary))"
                   fill="hsl(var(--primary))"
                   fillOpacity={0.3}
+                  stackId="1"
+                />
+                <Area 
+                  yAxisId="elevation"
+                  type="monotone" 
+                  dataKey="elevation" 
+                  name="Elevation" 
+                  stroke="#22c55e"
+                  fill="#22c55e"
+                  fillOpacity={0.2}
+                  stackId="2"
+                />
+                <Area 
+                  yAxisId="activities"
+                  type="monotone" 
+                  dataKey="activities" 
+                  name="Activities" 
+                  stroke="#3b82f6"
+                  fill="#3b82f6"
+                  fillOpacity={0.2}
+                  stackId="3"
                 />
               </AreaChart>
             </ResponsiveContainer>
