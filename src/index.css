@@ -166,7 +166,7 @@ td {
 
 /* Code block and markdown styling */
 pre {
-  @apply p-4 rounded-md bg-gray-50 text-gray-700 text-sm leading-relaxed font-mono;
+  @apply p-4 rounded-md bg-gray-50 text-gray-700 text-sm leading-relaxed font-['Menlo','Monaco','Consolas','Liberation_Mono','Courier_New',monospace];
   line-height: 1.6;
 }
 
@@ -202,5 +202,5 @@ pre {
 }
 
 .markdown-content code {
-  @apply bg-gray-100 rounded px-1 py-0.5 text-uphill-navy font-mono text-sm;
+  @apply bg-gray-100 rounded px-1 py-0.5 text-uphill-navy font-['Menlo','Monaco','Consolas','Liberation_Mono','Courier_New',monospace] text-sm;
 }
