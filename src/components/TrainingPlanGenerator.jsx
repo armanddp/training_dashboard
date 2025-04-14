@@ -40,18 +40,47 @@ const TrainingPlanGenerator = ({ activitiesData }) => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
   const [interimResponse, setInterimResponse] = useState('');
+  // Set dates relative to current date for better relevancy
+  const today = new Date();
+  const nextYear = new Date(today);
+  nextYear.setFullYear(today.getFullYear() + 1);
+  
+  // Main race date - about 16 months from now (next year late August)
+  const targetRaceDate = new Date(nextYear);
+  targetRaceDate.setMonth(7); // August (0-indexed)
+  targetRaceDate.setDate(25);
+  
+  // Race 1 - about 12 months from now (next year May)
+  const race1Date = new Date(nextYear);
+  race1Date.setMonth(4); // May
+  race1Date.setDate(24);
+  
+  // Race 2 - about 14 months from now (next year late June)
+  const race2Date = new Date(nextYear);
+  race2Date.setMonth(5); // June
+  race2Date.setDate(28);
+  
+  // Travel dates - about 13 months from now (next year early June)
+  const travelStartDate = new Date(nextYear);
+  travelStartDate.setMonth(5); // June
+  travelStartDate.setDate(1);
+  
+  const travelEndDate = new Date(nextYear);
+  travelEndDate.setMonth(5); // June
+  travelEndDate.setDate(10);
+  
   const [formData, setFormData] = useState({
     targetRace: {
       name: "PTL (Petite Trotte à Léon)",
-      date: new Date("2025-08-25"), // Default date for PTL
+      date: targetRaceDate, // Default date for PTL
       description: "Extreme ultra-endurance mountain race, part of UTMB. ~300km with 25,000m+ of elevation gain over 5-6 days. Technical alpine terrain with minimal sleep."
     },
     additionalRaces: [
-      { name: "MUT 100 Miler", date: new Date("2025-05-24"), description: "100-mile mountain ultra, ideal dress rehearsal for long duration effort and night running practice." },
-      { name: "Sky Marathon of Monte Rosa", date: new Date("2025-06-28"), description: "Technical alpine sky race with significant elevation, good preparation for high mountain terrain in PTL." },
+      { name: "MUT 100 Miler", date: race1Date, description: "100-mile mountain ultra, ideal dress rehearsal for long duration effort and night running practice." },
+      { name: "Sky Marathon of Monte Rosa", date: race2Date, description: "Technical alpine sky race with significant elevation, good preparation for high mountain terrain in PTL." },
     ],
     travelSchedules: [
-      { startDate: new Date("2025-06-01"), endDate: new Date("2025-06-10"), location: "Italian Alps", notes: "Training camp at altitude with access to technical terrain similar to PTL route." }
+      { startDate: travelStartDate, endDate: travelEndDate, location: "Italian Alps", notes: "Training camp at altitude with access to technical terrain similar to PTL route." }
     ],
     trainingPreferences: {
       focusAreas: "Vertical gain/loss training, multi-day endurance, night navigation, technical alpine terrain, mental resilience, altitude adaptation.",
@@ -509,12 +538,11 @@ ${fullPlan}
                       onSelect={(date) => handleInputChange('targetRace', 'date', date)}
                       initialFocus
                       showOutsideDays={true}
-                      className="rdp-calendar"
+                      className="custom-calendar"
                       fixedWeeks
-                      defaultMonth={new Date("2025-07-01")}
-                      captionLayout="dropdown-buttons"
-                      fromYear={2024}
-                      toYear={2026}
+                      defaultMonth={targetRaceDate}
+                      captionLayout="buttons"
+                      today={today}
                     />
                   </PopoverContent>
                 </Popover>
@@ -611,12 +639,11 @@ ${fullPlan}
                           onSelect={(date) => handleInputChange('additionalRaces', 'date', date, index)}
                           initialFocus
                           showOutsideDays={true}
-                          className="rdp-calendar"
+                          className="custom-calendar"
                           fixedWeeks
-                          defaultMonth={new Date("2025-05-01")}
-                          captionLayout="dropdown-buttons"
-                          fromYear={2024}
-                          toYear={2026}
+                          defaultMonth={race.date || race1Date}
+                          captionLayout="buttons"
+                          today={today}
                         />
                       </PopoverContent>
                     </Popover>
@@ -710,12 +737,11 @@ ${fullPlan}
                           onSelect={(date) => handleInputChange('travelSchedules', 'startDate', date, index)}
                           initialFocus
                           showOutsideDays={true}
-                          className="rdp-calendar"
+                          className="custom-calendar"
                           fixedWeeks
-                          defaultMonth={new Date("2025-05-01")}
-                          captionLayout="dropdown-buttons"
-                          fromYear={2024}
-                          toYear={2026}
+                          defaultMonth={travel.startDate || travelStartDate}
+                          captionLayout="buttons"
+                          today={today}
                         />
                       </PopoverContent>
                     </Popover>
@@ -742,12 +768,11 @@ ${fullPlan}
                           onSelect={(date) => handleInputChange('travelSchedules', 'endDate', date, index)}
                           initialFocus
                           showOutsideDays={true}
-                          className="rdp-calendar"
+                          className="custom-calendar"
                           fixedWeeks
-                          defaultMonth={new Date("2025-05-01")}
-                          captionLayout="dropdown-buttons"
-                          fromYear={2024}
-                          toYear={2026}
+                          defaultMonth={travel.endDate || travelEndDate}
+                          captionLayout="buttons"
+                          today={today}
                         />
                       </PopoverContent>
                     </Popover>

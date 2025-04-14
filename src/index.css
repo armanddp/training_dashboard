@@ -2,175 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add explicit DayPicker CSS to ensure calendar renders properly */
+/* Add basic styling resets for react-day-picker */
 .rdp {
-  --rdp-cell-size: 32px;
-  --rdp-accent-color: #4A9ED9;
-  --rdp-background-color: rgba(74, 158, 217, 0.15);
-  --rdp-accent-color-dark: #4A9ED9;
-  --rdp-background-color-dark: rgba(74, 158, 217, 0.3);
-  --rdp-outline: 2px solid var(--rdp-accent-color);
-  --rdp-outline-selected: 2px solid var(--rdp-accent-color);
-  --rdp-selected-color: white;
-  margin: 0;
-  position: relative;
+  --rdp-accent-color: #4A9ED9 !important;
+  --rdp-background-color: rgba(74, 158, 217, 0.15) !important;
 }
 
-.rdp-table {
-  border-collapse: collapse;
-  margin: 0;
+/* Style the calendar nicely */
+.custom-calendar {
+  margin: 0 !important;
+  width: 100% !important;
 }
 
-.rdp-with_weeknumber .rdp-table {
-  border-collapse: collapse;
-}
-
-.rdp-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem;
-  text-align: left;
-}
-
-.rdp-caption_label {
-  font-weight: 500;
-  font-size: 1rem;
-  margin: 0;
-  position: relative;
-  text-align: center;
-  color: var(--uphill-navy);
-}
-
-.rdp-nav {
-  display: flex;
-  gap: 12px;
-}
-
-.rdp-multiple_months .rdp-caption {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.5em;
-}
-
-.rdp-multiple_months .rdp-month:first-child .rdp-caption {
-  position: relative;
-  margin-bottom: 0.5em;
-}
-
-.rdp-multiple_months .rdp-caption_start .rdp-nav {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-}
-
-.rdp-multiple_months .rdp-caption_end .rdp-nav {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-}
-
-.rdp-head_row {
-  text-transform: uppercase;
-  font-size: 0.7em;
-  font-weight: 500;
-  color: #4A5568;
-  display: flex;
-}
-
-.rdp-head_cell {
-  text-align: center;
-  padding: 0.5em;
-  font-weight: 500;
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
-  box-sizing: border-box;
-}
-
-.rdp-tbody {
-  border-collapse: collapse;
-  display: flex;
-  flex-direction: column;
-}
-
-.rdp-row {
-  display: flex;
-}
-
-.rdp-cell {
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
-  position: relative;
-  text-align: center;
-  padding: 0;
-}
-
-.rdp-weeknumber {
-  font-size: 0.75em;
-}
-
-.rdp-weeknumber,
-.rdp-day {
-  display: flex;
-  overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: var(--rdp-cell-size);
-  height: var(--rdp-cell-size);
-  margin: 0;
-  padding: 0;
-  border: 2px solid transparent;
-  border-radius: 100%;
-}
-
-.rdp-day_today {
-  font-weight: bold;
-  border: 1px solid #bbb;
-}
-
-.rdp-day_selected {
-  background-color: var(--rdp-accent-color);
-  color: var(--rdp-selected-color);
-}
-
-.rdp-day_selected:hover {
-  background-color: var(--rdp-accent-color);
-}
-
-.rdp-day_outside {
-  opacity: 0.5;
-}
-
-.rdp-day_disabled {
-  opacity: 0.35;
-  pointer-events: none;
-}
-
-/* Make the button fill the day cell */
 .rdp-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: none;
-  color: currentColor;
-  border: none;
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
-.rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
-  background-color: var(--rdp-background-color);
+.rdp-day_selected,
+.rdp-day_selected:focus,
+.rdp-day_selected:not([disabled]) {
+  background-color: var(--uphill-blue) !important;
+  color: white !important;
+  font-weight: bold;
 }
 
-.rdp-button:active:not([disabled]) {
-  border: 2px solid var(--rdp-accent-color);
+.rdp-day_selected:hover,
+.rdp-day_selected:focus:hover {
+  background-color: var(--uphill-blue) !important;
+  color: white !important;
+}
+
+/* Make calendar work properly in dark mode */
+.dark .rdp-day {
+  color: #e0e0e0;
+}
+
+.dark .rdp-day_today:not(.rdp-day_outside) {
+  color: white;
+  font-weight: bold;
+  border-color: var(--uphill-blue);
 }
 
 :root {

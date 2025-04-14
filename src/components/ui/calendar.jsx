@@ -13,12 +13,19 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }) {
+  // Use default styling for react-day-picker
+  const dayPickerClassName = cn("p-3 light", className);
+  
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
+      className={dayPickerClassName}
+      modifiersClassNames={{
+        selected: "bg-uphill-blue text-white",
+        today: "border border-uphill-blue/50 font-semibold"
+      }}
       classNames={{
-        root: "rdp",
+        month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
         nav: "space-x-1 flex items-center",
@@ -28,12 +35,20 @@ function Calendar({
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
+        table: "w-full border-collapse space-y-1",
         head_row: "flex",
-        day: "rdp-day",
-        day_selected: "rdp-day_selected",
-        day_today: "rdp-day_today",
-        day_outside: "rdp-day_outside",
-        day_disabled: "rdp-day_disabled",
+        head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
+        row: "flex w-full mt-2",
+        cell: "text-center text-sm relative p-0 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        day: cn(
+          buttonVariants({ variant: "ghost" }),
+          "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
+        ),
+        day_selected: "bg-uphill-blue text-primary-foreground hover:bg-uphill-blue hover:text-primary-foreground focus:bg-uphill-blue focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
+        day_outside: "text-muted-foreground opacity-50",
+        day_disabled: "text-muted-foreground opacity-50",
+        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
         ...classNames,
       }}
