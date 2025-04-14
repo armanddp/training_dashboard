@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Upload, AlertCircle, CheckCircle, FileSpreadsheet } from 'lucide-react';
+import { Upload, AlertCircle, CheckCircle, FileSpreadsheet, Database } from 'lucide-react';
 import { motion } from "framer-motion";
 
 const FileUpload = ({ onFileUpload, isLoading }) => {
@@ -11,6 +11,7 @@ const FileUpload = ({ onFileUpload, isLoading }) => {
   const [fileName, setFileName] = useState(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [loadingSample, setLoadingSample] = useState(false);
   const inputRef = useRef(null);
 
   const handleDrag = (e) => {
@@ -82,6 +83,51 @@ const FileUpload = ({ onFileUpload, isLoading }) => {
   const onButtonClick = () => {
     inputRef.current.click();
   };
+  
+  const handleUseSampleData = async () => {
+    try {
+      setLoadingSample(true);
+      setError(null);
+      setUploadProgress(0);
+      
+      // Start progress animation
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          const newProgress = prev + Math.random() * 15;
+          return newProgress > 90 ? 90 : newProgress;
+        });
+      }, 200);
+      
+      // Fetch the sample data
+      const response = await fetch('/sample/activities.csv');
+      if (!response.ok) {
+        throw new Error("Failed to load sample data. Status: " + response.status);
+      }
+      
+      // Convert to blob
+      const data = await response.blob();
+      
+      // Create a File object from the blob
+      const sampleFile = new File([data], "sample_activities.csv", {
+        type: "text/csv",
+      });
+      
+      setFileName("sample_activities.csv");
+      
+      // Complete the progress animation
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+      // Forward the file to the parent component
+      onFileUpload(sampleFile);
+      setUploadSuccess(true);
+    } catch (error) {
+      console.error("Error loading sample data:", error);
+      setError("Failed to load sample data. Please try uploading your own file.");
+    } finally {
+      setLoadingSample(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-3xl mx-auto mb-8">
@@ -102,12 +148,18 @@ const FileUpload = ({ onFileUpload, isLoading }) => {
             
             <div 
               className={`w-full flex flex-col items-center justify-center gap-4 p-8 rounded-lg transition-all duration-300
-                ${dragActive ? 'bg-uphill-blue/10' : 'bg-gray-50/50'} backdrop-blur-sm border border-uphill-blue/10`}
+                ${dragActive ? 'bg-uphill-blue/10' : 'bg-gray-50/50'} backdrop-blur-sm border border-uphill-blue/10 relative`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
+              {/* Sample data banner */}
+              <div className="absolute top-0 right-0">
+                <div className="bg-uphill-blue text-white text-xs py-1 px-3 rounded-bl-lg font-medium">
+                  Sample data available
+                </div>
+              </div>
               <motion.div 
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -136,29 +188,46 @@ const FileUpload = ({ onFileUpload, isLoading }) => {
                 <div className="text-xs text-gray-500 max-w-sm mx-auto">
                   <p className="mb-1">1. Go to <a href="https://www.strava.com/athlete/delete_your_account" className="text-uphill-blue underline" target="_blank" rel="noopener noreferrer">https://www.strava.com/athlete/delete_your_account</a></p>
                   <p className="mb-1">2. Click the "Download Request (optional)" button.</p>
-                  <p>3. Wait for the export to arrive and unzip somewhere"</p>
+                  <p className="mb-1">3. Wait for the export to arrive and unzip somewhere</p>
+                  <p className="mt-2 text-uphill-blue font-medium">Or use our sample data to test the app</p>
                 </div>
               </div>
               
-              <Button 
-                onClick={onButtonClick}
-                className="bg-uphill-blue hover:bg-uphill-navy text-white font-medium transition-all"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <span className="animate-pulse">Processing...</span>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="mr-2 h-4 w-4" /> Browse Files
-                  </>
-                )}
-              </Button>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Button 
+                  onClick={onButtonClick}
+                  className="bg-uphill-blue hover:bg-uphill-navy text-white font-medium transition-all"
+                  disabled={isLoading || loadingSample}
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="animate-pulse">Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="mr-2 h-4 w-4" /> Browse Files
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  onClick={handleUseSampleData}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-uphill-navy font-medium transition-all border border-gray-300"
+                  disabled={isLoading || loadingSample}
+                >
+                  {loadingSample ? (
+                    <span className="animate-pulse">Loading Sample...</span>
+                  ) : (
+                    <>
+                      <Database className="mr-2 h-4 w-4" /> Use Sample Data
+                    </>
+                  )}
+                </Button>
+              </div>
               
               {/* Upload Progress Bar */}
-              {(isLoading || uploadProgress > 0) && (
-                <div className="w-full mt-2">
+              {(isLoading || loadingSample || uploadProgress > 0) && (
+                <div className="w-full mt-4">
                   <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-uphill-blue transition-all duration-300 ease-out"
@@ -166,7 +235,11 @@ const FileUpload = ({ onFileUpload, isLoading }) => {
                     />
                   </div>
                   <p className="text-xs text-center mt-1 text-gray-600">
-                    {uploadProgress < 100 ? "Analyzing data..." : "Analysis complete!"}
+                    {uploadProgress < 100 
+                      ? loadingSample 
+                         ? "Loading sample dataset..." 
+                         : "Analyzing data..." 
+                      : "Analysis complete!"}
                   </p>
                 </div>
               )}
