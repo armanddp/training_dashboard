@@ -293,9 +293,10 @@ export const parseOpenAIResponse = (response) => {
  * @param {Object} formData - User input data
  * @param {Object} activitiesData - Processed Strava data
  * @param {string|null} customPrompt - Optional custom prompt to override default
+ * @param {Function|null} onProgress - Optional callback for streaming progress
  * @returns {Promise<Object>} - Structured training plan and insights
  */
-export const generateTrainingPlan = async (formData, activitiesData, customPrompt = null) => {
+export const generateTrainingPlan = async (formData, activitiesData, customPrompt = null, onProgress = null) => {
   try {
     const trainingDataSummary = summarizeTrainingData(activitiesData);
     
@@ -314,25 +315,106 @@ export const generateTrainingPlan = async (formData, activitiesData, customPromp
             }
           ],
           temperature: 0.7,
-          max_tokens: 4000
+          max_tokens: 4000,
+          stream: onProgress !== null // Enable streaming if callback provided
         }
-      : createOpenAIPrompt(formData, trainingDataSummary);
+      : {
+          ...createOpenAIPrompt(formData, trainingDataSummary),
+          stream: onProgress !== null // Enable streaming for default prompt too
+        };
     
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify(promptData)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+    // If streaming is enabled and callback provided
+    if (onProgress) {
+      let fullResponse = '';
+      let iterator = 0;
+      
+      // Create fetch with stream processing
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify(promptData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      // Process the stream
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        // Decode chunk and append to full response
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Check if chunk is a data item from SSE format
+        if (chunk.includes('data:')) {
+          try {
+            // Extract JSON objects from the stream
+            const lines = chunk.split('\n').filter(line => line.trim() !== '');
+            
+            for (const line of lines) {
+              if (line.startsWith('data:')) {
+                const jsonStr = line.slice(5).trim();
+                
+                // Handle the final [DONE] message
+                if (jsonStr === '[DONE]') continue;
+                
+                // Parse JSON and extract content
+                try {
+                  const jsonData = JSON.parse(jsonStr);
+                  const contentDelta = jsonData.choices[0]?.delta?.content || '';
+                  
+                  if (contentDelta) {
+                    fullResponse += contentDelta;
+                    
+                    // Only update every few tokens to avoid too many updates
+                    iterator++;
+                    if (iterator % 5 === 0 || contentDelta.includes('\n')) {
+                      onProgress(fullResponse);
+                    }
+                  }
+                } catch (e) {
+                  console.error('Error parsing JSON from stream:', e);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error processing stream chunk:', error);
+          }
+        }
+      }
+      
+      // Send the final complete response
+      onProgress(fullResponse);
+      
+      // Parse and return the final response
+      const mockResponse = { choices: [{ message: { content: fullResponse } }] };
+      return parseOpenAIResponse(mockResponse);
+    } else {
+      // Regular non-streaming request
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify(promptData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return parseOpenAIResponse(data);
     }
-    
-    const data = await response.json();
-    return parseOpenAIResponse(data);
   } catch (error) {
     console.error("Error generating training plan:", error);
     throw error;

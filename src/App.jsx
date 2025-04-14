@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Terminal } from "lucide-react";
+// Make sure react-day-picker styles are imported globally
+import "react-day-picker/dist/style.css";
 
 function App() {
   const [activitiesData, setActivitiesData] = useState(null);

@@ -2,32 +2,175 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Calendar styles */
+/* Add explicit DayPicker CSS to ensure calendar renders properly */
 .rdp {
-  --rdp-cell-size: 40px;
+  --rdp-cell-size: 32px;
   --rdp-accent-color: #4A9ED9;
   --rdp-background-color: rgba(74, 158, 217, 0.15);
   --rdp-accent-color-dark: #4A9ED9;
   --rdp-background-color-dark: rgba(74, 158, 217, 0.3);
   --rdp-outline: 2px solid var(--rdp-accent-color);
   --rdp-outline-selected: 2px solid var(--rdp-accent-color);
-  margin: 1em;
+  --rdp-selected-color: white;
+  margin: 0;
+  position: relative;
 }
 
-.rdp-day_selected, 
-.rdp-day_selected:focus-visible, 
+.rdp-table {
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.rdp-with_weeknumber .rdp-table {
+  border-collapse: collapse;
+}
+
+.rdp-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.rdp-caption_label {
+  font-weight: 500;
+  font-size: 1rem;
+  margin: 0;
+  position: relative;
+  text-align: center;
+  color: var(--uphill-navy);
+}
+
+.rdp-nav {
+  display: flex;
+  gap: 12px;
+}
+
+.rdp-multiple_months .rdp-caption {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5em;
+}
+
+.rdp-multiple_months .rdp-month:first-child .rdp-caption {
+  position: relative;
+  margin-bottom: 0.5em;
+}
+
+.rdp-multiple_months .rdp-caption_start .rdp-nav {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.rdp-multiple_months .rdp-caption_end .rdp-nav {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.rdp-head_row {
+  text-transform: uppercase;
+  font-size: 0.7em;
+  font-weight: 500;
+  color: #4A5568;
+  display: flex;
+}
+
+.rdp-head_cell {
+  text-align: center;
+  padding: 0.5em;
+  font-weight: 500;
+  width: var(--rdp-cell-size);
+  height: var(--rdp-cell-size);
+  box-sizing: border-box;
+}
+
+.rdp-tbody {
+  border-collapse: collapse;
+  display: flex;
+  flex-direction: column;
+}
+
+.rdp-row {
+  display: flex;
+}
+
+.rdp-cell {
+  width: var(--rdp-cell-size);
+  height: var(--rdp-cell-size);
+  position: relative;
+  text-align: center;
+  padding: 0;
+}
+
+.rdp-weeknumber {
+  font-size: 0.75em;
+}
+
+.rdp-weeknumber,
+.rdp-day {
+  display: flex;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--rdp-cell-size);
+  height: var(--rdp-cell-size);
+  margin: 0;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 100%;
+}
+
+.rdp-day_today {
+  font-weight: bold;
+  border: 1px solid #bbb;
+}
+
+.rdp-day_selected {
+  background-color: var(--rdp-accent-color);
+  color: var(--rdp-selected-color);
+}
+
 .rdp-day_selected:hover {
   background-color: var(--rdp-accent-color);
-  color: white;
+}
+
+.rdp-day_outside {
+  opacity: 0.5;
+}
+
+.rdp-day_disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Make the button fill the day cell */
+.rdp-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: currentColor;
+  border: none;
+  cursor: pointer;
 }
 
 .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
   background-color: var(--rdp-background-color);
 }
 
-.rdp-months {
-  display: flex;
-  justify-content: center;
+.rdp-button:active:not([disabled]) {
+  border: 2px solid var(--rdp-accent-color);
 }
 
 :root {
@@ -49,20 +192,40 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--uphill-blue);
-  border-radius: 4px;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--uphill-navy);
+}
+
+/* Thin scrollbar for the live preview */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scrollbar-thumb-uphill-blue\/20::-webkit-scrollbar-thumb {
+  background: rgba(74, 158, 217, 0.2);
+}
+
+.scrollbar-thumb-uphill-blue\/20::-webkit-scrollbar-thumb:hover {
+  background: rgba(74, 158, 217, 0.4);
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @layer base {

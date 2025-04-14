@@ -39,6 +39,7 @@ const TrainingPlanGenerator = ({ activitiesData }) => {
   const [error, setError] = useState(null);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [customPrompt, setCustomPrompt] = useState('');
+  const [interimResponse, setInterimResponse] = useState('');
   const [formData, setFormData] = useState({
     targetRace: {
       name: "PTL (Petite Trotte à Léon)",
@@ -156,6 +157,7 @@ const TrainingPlanGenerator = ({ activitiesData }) => {
     setLoading(true);
     setError(null);
     setLoadingProgress(0);
+    setInterimResponse('');
     setLoadingMessage('Initializing plan generation...');
     nextStep(); // Move to step 5 immediately (loading screen)
     
@@ -163,9 +165,38 @@ const TrainingPlanGenerator = ({ activitiesData }) => {
     const progressInterval = simulateProgress();
     
     try {
-      // Call the OpenAI service to generate the training plan
+      // Function to handle streaming updates from the LLM
+      const handleStreamProgress = (partialResponse) => {
+        // Update the interim response with the latest text
+        setInterimResponse(partialResponse);
+        
+        // Show more realistic progress based on response length
+        const estimatedLength = 6000; // Rough estimate of expected response length
+        const progressPercentage = Math.min(95, Math.floor((partialResponse.length / estimatedLength) * 100));
+        setLoadingProgress(progressPercentage);
+        
+        // Update loading message based on what's being generated
+        if (partialResponse.toLowerCase().includes('insights')) {
+          setLoadingMessage('Generating insights from your training data...');
+        } else if (partialResponse.toLowerCase().includes('overview')) {
+          setLoadingMessage('Creating training plan overview...');
+        } else if (partialResponse.toLowerCase().includes('phase')) {
+          setLoadingMessage('Designing training phases...');
+        } else if (partialResponse.toLowerCase().includes('week')) {
+          setLoadingMessage('Building weekly schedule...');
+        } else if (progressPercentage > 80) {
+          setLoadingMessage('Finalizing your training plan...');
+        }
+      };
+      
+      // Call the OpenAI service to generate the training plan with streaming
       const customPromptText = getPromptForAPI();
-      const result = await generateTrainingPlan(formData, activitiesData, customPromptText);
+      const result = await generateTrainingPlan(
+        formData, 
+        activitiesData, 
+        customPromptText, 
+        handleStreamProgress // Pass the streaming handler
+      );
       
       // Process the result to enhance visualization
       let processedResult = result;
@@ -471,13 +502,19 @@ ${fullPlan}
                         "Select date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
+                  <PopoverContent className="w-auto p-3 bg-white shadow-lg border border-gray-200 rounded-md">
                     <Calendar
                       mode="single"
                       selected={formData.targetRace.date}
                       onSelect={(date) => handleInputChange('targetRace', 'date', date)}
                       initialFocus
-                      className="rounded-md border border-uphill-blue/20"
+                      showOutsideDays={true}
+                      className="rdp-calendar"
+                      fixedWeeks
+                      defaultMonth={new Date("2025-07-01")}
+                      captionLayout="dropdown-buttons"
+                      fromYear={2024}
+                      toYear={2026}
                     />
                   </PopoverContent>
                 </Popover>
@@ -567,13 +604,19 @@ ${fullPlan}
                             "Select date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-3 bg-white shadow-lg border border-gray-200 rounded-md">
                         <Calendar
                           mode="single"
                           selected={race.date}
                           onSelect={(date) => handleInputChange('additionalRaces', 'date', date, index)}
                           initialFocus
-                          className="rounded-md border border-uphill-blue/20"
+                          showOutsideDays={true}
+                          className="rdp-calendar"
+                          fixedWeeks
+                          defaultMonth={new Date("2025-05-01")}
+                          captionLayout="dropdown-buttons"
+                          fromYear={2024}
+                          toYear={2026}
                         />
                       </PopoverContent>
                     </Popover>
@@ -660,13 +703,19 @@ ${fullPlan}
                             "Select date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-3 bg-white shadow-lg border border-gray-200 rounded-md">
                         <Calendar
                           mode="single"
                           selected={travel.startDate}
                           onSelect={(date) => handleInputChange('travelSchedules', 'startDate', date, index)}
                           initialFocus
-                          className="rounded-md border border-uphill-blue/20"
+                          showOutsideDays={true}
+                          className="rdp-calendar"
+                          fixedWeeks
+                          defaultMonth={new Date("2025-05-01")}
+                          captionLayout="dropdown-buttons"
+                          fromYear={2024}
+                          toYear={2026}
                         />
                       </PopoverContent>
                     </Popover>
@@ -686,13 +735,19 @@ ${fullPlan}
                             "Select date"}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-3 bg-white shadow-lg border border-gray-200 rounded-md">
                         <Calendar
                           mode="single"
                           selected={travel.endDate}
                           onSelect={(date) => handleInputChange('travelSchedules', 'endDate', date, index)}
                           initialFocus
-                          className="rounded-md border border-uphill-blue/20"
+                          showOutsideDays={true}
+                          className="rdp-calendar"
+                          fixedWeeks
+                          defaultMonth={new Date("2025-05-01")}
+                          captionLayout="dropdown-buttons"
+                          fromYear={2024}
+                          toYear={2026}
                         />
                       </PopoverContent>
                     </Popover>
@@ -929,6 +984,20 @@ ${fullPlan}
                       );
                     })}
                   </div>
+                  
+                  {/* Live preview of generated content */}
+                  {interimResponse && (
+                    <div className="mt-6 border border-uphill-blue/10 rounded-lg p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 bg-uphill-blue rounded-full animate-pulse"></div>
+                        <p className="text-xs font-medium text-uphill-blue">Live Preview</p>
+                      </div>
+                      <div className="max-h-[150px] overflow-auto text-xs text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-relaxed font-mono scrollbar-thin scrollbar-thumb-uphill-blue/20 scrollbar-track-transparent">
+                        {interimResponse.slice(-800)} {/* Show last 800 chars to avoid overwhelming the UI */}
+                        <span className="inline-block h-4 w-0.5 bg-uphill-blue/50 ml-0.5 animate-pulse"></span>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="bg-uphill-blue/5 border border-uphill-blue/20 rounded-lg p-4 mt-6">
                     <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-relaxed">
