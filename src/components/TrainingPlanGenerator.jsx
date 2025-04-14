@@ -46,8 +46,8 @@ const TrainingPlanGenerator = ({ activitiesData }) => {
       description: "Extreme ultra-endurance mountain race, part of UTMB. ~300km with 25,000m+ of elevation gain over 5-6 days. Technical alpine terrain with minimal sleep."
     },
     additionalRaces: [
-      { name: "Sky Marathon of Monte Rosa", date: new Date("2025-06-28"), description: "Technical alpine sky race with significant elevation, good preparation for high mountain terrain in PTL." },
       { name: "MUT 100 Miler", date: new Date("2025-05-24"), description: "100-mile mountain ultra, ideal dress rehearsal for long duration effort and night running practice." },
+      { name: "Sky Marathon of Monte Rosa", date: new Date("2025-06-28"), description: "Technical alpine sky race with significant elevation, good preparation for high mountain terrain in PTL." },
     ],
     travelSchedules: [
       { startDate: new Date("2025-06-01"), endDate: new Date("2025-06-10"), location: "Italian Alps", notes: "Training camp at altitude with access to technical terrain similar to PTL route." }
